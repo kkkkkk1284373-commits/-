@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>머지 쿠킹 마스터 - 울트라 하이엔드 고화질 에디션</title>
+<style>
+* {
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+}
+body {
+    margin: 0;
+    padding: 0;
+    background: #020617;
+    color: #f8fafc;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+    touch-action: manipulation;
+}
+#game-container {
+    width: 100vw;
+    max-width: 480px;
+    height: 100vh;
+    max-height: 920px;
+    background: #0f172a;
+    border-radius: 28px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.95);
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    border: 2px solid #334155;
+}
+.header {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: #1e293b;
+    padding: 8px 10px;
+    border-radius: 14px;
+    margin-bottom: 6px;
+    border: 1px solid #475569;
+}
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.currency-box {
+    display: flex;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 800;
+}
+.coin-display { color: #fbbf24; }
+.gem-display { color: #f472b6; }
+.exp-display { color: #38bdf8; }
+.top-btns {
+    display: flex;
+    gap: 4px;
+}
+.menu-btn {
+    padding: 5px 8px;
+    background: #334155;
+    color: #f8fafc;
+    border: 1px solid #64748b;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 10px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.menu-btn:active { background: #475569; }
+.customer-area {
+    width: 100%;
+    background: #1e293b;
+    border: 2px dashed #64748b;
+    border-radius: 10px;
+    padding: 6px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+.customer-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.customer-avatar {
+    width: 32px; height: 32px;
+    background: #334155; border-radius: 50%;
+    display: flex; justify-content: center; align-items: center;
+    font-size: 14px; font-weight: 900; color: #38bdf8;
+    flex-shrink: 0;
+}
+.customer-speech .title { font-size: 8px; color: #94a3b8; font-weight: 700; }
+.customer-speech .order { font-size: 10px; color: #60a5fa; font-weight: 900; }
+.customer-right {
+    display: flex; flex-direction: column; align-items: flex-end; gap: 3px;
+}
+.reward-badge {
+    background: #831843; color: #f472b6;
+    padding: 2px 5px; border-radius: 4px; font-size: 8px; font-weight: 800;
+}
+.btn-group {
+    display: flex; gap: 4px;
+}
+.goto-btn {
+    padding: 2px 5px; background: #0284c7; color: #f0fdf4;
+    border: 1px solid #38bdf8; border-radius: 4px; font-size: 9px; font-weight: 800; cursor: pointer;
+}
+.skip-btn {
+    padding: 2px 5px; background: #991b1b; color: #fecaca;
+    border: 1px solid #dc2626; border-radius: 4px; font-size: 9px; font-weight: 800; cursor: pointer;
+}
+/* 6x6 Grid Container */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(6, 1fr);
+    gap: 5px;
+    width: 100%;
+    aspect-ratio: 1;
+    padding: 8px;
+    border-radius: 16px;
+    margin-bottom: 6px;
+    border: 2px solid rgba(255,255,255,0.15);
+    transition: background 0.3s ease;
+}
+.slot {
+    background: rgba(15, 23, 42, 0.6);
+    border-radius: 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    border: 1px solid rgba(255,255,255,0.1);
+    overflow: hidden;
+}
+.item {
+    width: 92%;
+    height: 92%;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-weight: 900;
+    color: #fff;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.5);
+    cursor: grab;
+    position: absolute;
+    z-index: 10;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.9);
+    font-size: 8px;
+    text-align: center;
+    padding: 1px;
+    touch-action: none;
+    border: 1px solid rgba(255,255,255,0.3);
+}
+.producer {
+    border: 2px dashed #fbbf24;
+    background: linear-gradient(135deg, #78350f, #451a03) !important;
+    cursor: pointer !important;
+}
+.trash-bin {
+    width: 100%;
+    background: #7f1d1d;
+    border: 2px dashed #b91c1c;
+    border-radius: 8px;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 10px;
+    color: #fee2e2;
+    font-weight: 800;
+    margin-bottom: 6px;
+}
+.controls {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.action-btn {
+    width: 100%;
+    padding: 8px;
+    font-size: 11px;
+    font-weight: 800;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 3px 5px rgba(0,0,0,0.4);
+    background: #2563eb;
+}
+.auto-merge-btn { background: #059669 !important; }
+.modal {
+    display: none;
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(15, 23, 42, 0.96);
+    border-radius: 28px;
+    z-index: 2000;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+.modal-header {
+    width: 100%; display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 14px; border-bottom: 1px solid #334155; padding-bottom: 10px;
+}
+.modal-body {
+    width: 100%; max-height: 82%; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;
+}
+.mode-card {
+    background: #1e293b;
+    border: 1px solid #334155;
+    padding: 10px 12px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.shop-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.shop-controls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.shop-input {
+    width: 40px;
+    background: #0f172a;
+    color: #f8fafc;
+    border: 1px solid #64748b;
+    border-radius: 4px;
+    text-align: center;
+    font-weight: 900;
+    font-size: 11px;
+    padding: 3px;
+}
+.accordion-header {
+    background: #1e293b; color: #38bdf8; padding: 10px; border-radius: 8px;
+    cursor: pointer; font-weight: 800; font-size: 11px; display: flex; justify-content: space-between; border: 1px solid #334155;
+}
+.accordion-content { display: none; flex-direction: column; gap: 4px; padding: 6px 0; }
+.accordion-content.active { display: flex; }
+</style>
+</head>
+<body>
+
+<div id="game-container">
+    <div class="header">
+        <div class="header-top">
+            <div class="currency-box">
+                <span class="coin-display">🪙 <span id="coin-count">500</span></span>
+                <span class="gem-display">💎 <span id="gem-count">100</span></span>
+                <span class="exp-display">⭐ Lv.<span id="player-lv">1</span> (<span id="player-exp">0</span>/<span id="max-exp">10</span>)</span>
+            </div>
+            <div class="top-btns">
+                <button class="menu-btn" id="open-shop-modal" style="background:#db2777;">🛍️ 상점</button>
+                <button class="menu-btn" id="open-mode-modal" style="background:#0284c7;">📜 메뉴</button>
+                <button class="menu-btn" id="open-book">도감</button>
+                <button class="menu-btn" id="bgm-btn" style="background:#059669;">🔥 BGM</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="customer-area" id="customer-area">
+        <div class="customer-info">
+            <div class="customer-avatar" id="customer-avatar">👨‍🍳</div>
+            <div class="customer-speech">
+                <div class="title" id="customer-title-text">손님 주문</div>
+                <div class="order" id="customer-order-text">주문을 기다리는 중...</div>
+            </div>
+        </div>
+        <div class="customer-right">
+            <div class="reward-badge">보상 💎+<span id="customer-reward">3</span></div>
+            <div class="btn-group">
+                <button class="goto-btn" id="goto-mission-btn">📍바로가기</button>
+                <button class="skip-btn" id="skip-mission-btn">스킵</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6x6 Grid Board -->
+    <div class="grid-container" id="grid">
+        <script>for(let i=0; i<36; i++) document.write(`<div class="slot" data-index="${i}"></div>`);</script>
+    </div>
+
+    <div class="trash-bin" id="trash-bin">🗑️ 여기에 드래그하여 아이템/생산기 폐기</div>
+
+    <div class="controls">
+        <button class="action-btn auto-merge-btn" id="auto-merge-btn">⚡ 6x6 보드판 한 번에 합치기</button>
+        <button class="action-btn" id="spawn-btn" style="background:#d97706;">🏭 현재 모드 생산기 작동하기 (클릭)</button>
+    </div>
+
+    <!-- Modals -->
+    <div id="shop-modal" class="modal">
+        <div class="modal-header">
+            <h3>🛍️ 상점 (생산기 레벨선택 & 스킨)</h3>
+            <button class="menu-btn" id="close-shop-modal">닫기</button>
+        </div>
+        <div class="modal-body" id="shop-list"></div>
+    </div>
+
+    <div id="mode-modal" class="modal">
+        <div class="modal-header"><h3>📜 게임 메뉴 (20가지 요리 모드 선택)</h3><button class="menu-btn" id="close-mode-modal">닫기</button></div>
+        <div class="modal-body" id="mode-list"></div>
+    </div>
+
+    <div id="book-modal" class="modal">
+        <div class="modal-header"><h3>요리 도감 (마스터피스)</h3><button class="menu-btn" id="close-book">닫기</button></div>
+        <div class="modal-body" id="book-list"></div>
+    </div>
+</div>
+
+<script>
+const generateDetailedItems = (prefix, specials) => {
+    return Array(100).fill(0).map((_, i) => {
+        if (specials[i]) return specials[i];
+        return `${prefix} 마스터피스 #${i+1}`;
+    });
+};
+
+const bakeryItems = generateDetailedItems('베이커리', ['밀가루 반죽', '효모 볼', '생식빵', '버터 토스트', '모닝빵', '단팥빵', '소보로빵', '크루아상', '초코 츄러스', '애플 페이스트리']);
+const coffeeItems = generateDetailedItems('커피', ['생원두', '로스팅 원두', '원두 가루', '에스프레소', '아메리카노', '카페 라테', '카푸치노', '바닐라 라테', '콜드브루', '자바칩 프라푸치노']);
+const financierItems = generateDetailedItems('휘낭시에', ['버터 반죽', '설탕 시럽', '아몬드 가루', '기본 휘낭시에', '플레인 휘낭시에', '솔티드 캐러멜 휘낭시에', '초코 코팅 휘낭시에', '무화과 휘낭시에', '피스타치오 휘낭시에', '프리미엄 기프트 휘낭시에 세트']);
+const koreanItems = generateDetailedItems('한식', ['쌀밥', '배추김치', '된장', '된장찌개', '김치찌개', '비빔밥', '돌솥불고기', '간장게장', '한우 갈비찜', '임금님 수라상 궁중 한상차림']);
+const chineseItems = generateDetailedItems('중식', ['춘장', '군만두', '물만두', '짜장면', '간짜장', '짬뽕', '탕수육', '멘보샤', '동파육', '황제 불도장 코스']);
+const japaneseItems = generateDetailedItems('일식', ['초밥용 밥', '광어초밥', '연어초밥', '참치초밥', '새우초밥', '장어초밥', '모둠 생선회', '돈코츠 라멘', '스키야키', '오마카세 스페셜 스시']);
+const pizzaItems = generateDetailedItems('피자', ['피자 도우', '토마토 소스', '모차렐라 치즈', '치즈 피자', '페퍼로니 피자', '고구마 무스 피자', '포테이토 피자', '불고기 피자', '시카고 깊은 치즈 피자', '나폴리 화덕 마스터피스 피자']);
+const cookieItems = generateDetailedItems('쿠키', ['쿠키 반죽', '버터 쿠키', '초코칩 쿠키', '마카롱', '딸기 마카롱', '알록달록 젤리롤', '수제 브라우니', '티라미수', '초코 퐁듀 타워', '환상의 디저트 성채']);
+const fruitItems = generateDetailedItems('과일', ['씨앗', '새싹', '딸기', '사과', '귤', '바나나', '멜론', '망고', '샤인머스캣', '황금 프리미엄 과일 바스켓']);
+const chocolateItems = generateDetailedItems('초콜릿', ['카카오 닙스', '카카오 버터', '다크 초콜릿', '밀크 초콜릿', '화이트 초콜릿', '아몬드 초코볼', '생초콜릿 트러플', '수제 쇼콜라', '루비 초콜릿 케이크', '발렌타인 마스터피스 초코박스']);
+const jellyItems = generateDetailedItems('젤리', ['설탕 시럽', '물엿 볼', '과일 젤리', '딸기 젤리', '포도 젤리', '소다 젤리', '하리보 젤리믹스', '과즙 팡팡 푸딩', '레인보우 롤리팝', '환상의 젤리 왕국 플래터']);
+const nutItems = generateDetailedItems('견과류', ['생 아몬드', '구운 아몬드', '땅콩', '꿀땅콩', '호두', '캐슈너트', '마카다미아', '피칸', '허니버터 믹스너트', '로열 프리미엄 견과 세트']);
+const drinkItems = generateDetailedItems('음료', ['타피오카 펄', '흑당 시럽', '흑당 버블티', '타로 버블티', '말차 버블티', '생과일 수박주스', '블루 레몬에이드', '딸기 요거트 스무디', '트로피컬 에이드', '무지개 은하수 웰빙 음료 바']);
+const bungsikItems = generateDetailedItems('분식', ['멸치 육수', '밀떡볶이', '쌀떡볶이', '매콤 튀김세트', '치즈 떡볶이', '모둠 순대', '부산 찰어묵', '꼬치어묵탕', '매운 닭꼬치', '국민 추억의 분식 플래터']);
+const fastfoodItems = generateDetailedItems('패스트푸드', ['참깨 빵', '패티 & 치즈', '치킨 버거', '더블 치즈버거', '감자튀김 세트', '어니언링', '치즈볼', '불고기버거 세트', '메가 치킨팩', '패스트푸드 파티 콤보']);
+const beefItems = generateDetailedItems('소고기', ['우둔살', '시즈닝 럽', '부채살 스테이크', '안심 스테이크', '토마호크 스테이크', '한우 채끝살', '프라임 등심', '티본 스테이크', '숙성 드라이에이징', '황제 셰프 특선 비프 플래터']);
+const porkItems = generateDetailedItems('돼지고기', ['생삼겹살', '허브 솔트', '항정살', '숙성 목살구이', '명품 흑돼지 오겹살', '벌집 삼겹살', '매콤 제육볶음', '바삭 수제 돈카츠', '이베리코 꽃목살', '한돈 명품 구이 한상']);
+const brunchItems = generateDetailedItems('브런치', ['달걀 후라이', '아보카도 토스트', '폭신한 팬케이크', '에그 베네딕트', '호텔식 브런치 플래터', '스크램블 에그', '클럽 샌드위치', '프렌치 토스트', '베이컨 오믈렛', '유럽풍 럭셔리 브런치 세트']);
+const bbqItems = generateDetailedItems('바비큐', ['참나무 장작', '바비큐 소스', '훈연 폭립', '텍사스 브리스킷', '캠핑 바비큐 그릴 플래터', '텍사스 풀드포크', '스모크 치킨', '허브 양갈비 구이', '바비큐 플래터', '아메리칸 정통 야외 바비큐 파티']);
+const icecreamItems = generateDetailedItems('아이스크림', ['얼음 조각', '바닐라 스쿱', '과일 토핑 빙수', '무지개 파르페', '황금 망고 빙수타워', '초코 칩 플로트', '딸기 젤라또', '민트초코 빙수', '메론 설빙 타워', '디저트 얼음왕국 파라다이스']);
+
+const categories = [
+    { name: '베이커리', color: '#d97706', boardBg: '#451a03', icon: '🍞', unlockLv: 1, items: bakeryItems },
+    { name: '커피', color: '#b45309', boardBg: '#29170b', icon: '☕', unlockLv: 2, items: coffeeItems },
+    { name: '휘낭시에', color: '#92400e', boardBg: '#3b1c06', icon: '🧈', unlockLv: 5, items: financierItems },
+    { name: '한식(한국)', color: '#dc2626', boardBg: '#450a0a', icon: '🍲', unlockLv: 10, items: koreanItems },
+    { name: '중식(중국)', color: '#16a34a', boardBg: '#052e16', icon: '🥟', unlockLv: 15, items: chineseItems },
+    { name: '일식', color: '#2563eb', boardBg: '#172554', icon: '🍣', unlockLv: 20, items: japaneseItems },
+    { name: '피자', color: '#ca8a04', boardBg: '#422006', icon: '🍕', unlockLv: 25, items: pizzaItems },
+    { name: '쿠키', color: '#db2777', boardBg: '#500724', icon: '🍪', unlockLv: 30, items: cookieItems },
+    { name: '과일', color: '#10b981', boardBg: '#022c22', icon: '🍎', unlockLv: 35, items: fruitItems },
+    { name: '초콜릿', color: '#581c87', boardBg: '#3b0764', icon: '🍫', unlockLv: 40, items: chocolateItems },
+    { name: '젤리', color: '#ec4899', boardBg: '#500724', icon: '🍬', unlockLv: 45, items: jellyItems },
+    { name: '견과류', color: '#78350f', boardBg: '#271c12', icon: '🥜', unlockLv: 50, items: nutItems },
+    { name: '음료', color: '#0284c7', boardBg: '#082f49', icon: '🧋', unlockLv: 55, items: drinkItems },
+    { name: '분식', color: '#e11d48', boardBg: '#4c0519', icon: '🍢', unlockLv: 60, items: bungsikItems },
+    { name: '패스트푸드', color: '#ea580c', boardBg: '#431407', icon: '🍔', unlockLv: 65, items: fastfoodItems },
+    { name: '소고기', color: '#991b1b', boardBg: '#450a0a', icon: '🥩', unlockLv: 70, items: beefItems },
+    { name: '돼지고기', color: '#b45309', boardBg: '#381b0a', icon: '🥓', unlockLv: 75, items: porkItems },
+    { name: '브런치', color: '#ca8a04', boardBg: '#3d2507', icon: '🥞', unlockLv: 80, items: brunchItems },
+    { name: '바비큐', color: '#7c2d12', boardBg: '#2a0e05', icon: '🍖', unlockLv: 85, items: bbqItems },
+    { name: '아이스크림', color: '#0284c7', boardBg: '#0c2340', icon: '🍧', unlockLv: 90, items: icecreamItems }
+];
+
+const skins = [
+    { name: '네온 사이버 스킨', color: '#06b6d4', priceGem: 100, priceCoin: 200 },
+    { name: '황금 골드 스킨', color: '#eab308', priceGem: 250, priceCoin: 500 },
+    { name: '체리 블라섬 스킨', color: '#f43f5e', priceGem: 150, priceCoin: 300 }
+];
+const unlockedSkins = new Set(['기본 스킨']);
+let currentSkinColor = '#0f172a';
+
+// 🌟 고화질 일러스트 렌더링 엔진 (그릇, 질감, 토핑 표현)
+const iconCache = {};
+function getGeneratedFoodIcon(text, baseColor, level, catIdx) {
+    const key = text + "_" + level + "_" + catIdx;
+    if (iconCache[key]) return iconCache[key];
+
+    const canvas = document.createElement('canvas');
+    canvas.width = 64; canvas.height = 64;
+    const ctx = canvas.getContext('2d');
+
+    let hue = (catIdx * 18 + level * 3) % 360;
+    const grad = ctx.createLinearGradient(0, 0, 64, 64);
+    grad.addColorStop(0, `hsl(${hue}, 85%, 28%)`);
+    grad.addColorStop(1, `hsl(${hue}, 95%, 14%)`);
+    
+    ctx.fillStyle = grad;
+    ctx.beginPath(); ctx.roundRect(2, 2, 60, 60, 14); ctx.fill();
+    ctx.strokeStyle = `hsl(${hue}, 95%, 65%)`; ctx.lineWidth = 2.5; ctx.stroke();
+
+    ctx.save();
+    if (catIdx === 0) {
+        ctx.fillStyle = '#fde047'; ctx.beginPath(); ctx.roundRect(14, 20, 36, 26, [14, 14, 8, 8]); ctx.fill();
+        ctx.fillStyle = '#b45309'; ctx.fillRect(18, 25, 28, 3); ctx.fillRect(18, 32, 28, 3);
+    } else if (catIdx === 1) {
+        ctx.fillStyle = '#f8fafc'; ctx.beginPath(); ctx.roundRect(18, 20, 26, 26, [4, 4, 12, 12]); ctx.fill();
+        ctx.strokeStyle = '#f8fafc'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(44, 28, 6, -Math.PI/2, Math.PI/2); ctx.stroke();
+        ctx.fillStyle = '#451a03'; ctx.beginPath(); ctx.ellipse(31, 24, 11, 5, 0, 0, Math.PI * 2); ctx.fill();
+    } else if (catIdx === 2) {
+        ctx.fillStyle = '#f59e0b'; ctx.beginPath(); ctx.roundRect(12, 22, 40, 20, 6); ctx.fill();
+        ctx.fillStyle = '#78350f'; ctx.fillRect(16, 28, 32, 4);
+    } else if (catIdx === 3) {
+        ctx.fillStyle = '#334155'; ctx.beginPath(); ctx.arc(32, 42, 18, 0, Math.PI); ctx.fill();
+        ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.ellipse(32, 32, 17, 8, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#22c55e'; ctx.fillRect(26, 28, 12, 4);
+    } else if (catIdx === 4) {
+        ctx.fillStyle = '#fef08a'; ctx.beginPath(); ctx.ellipse(32, 30, 18, 12, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#ca8a04'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(32, 26, 9, 0, Math.PI); ctx.stroke();
+    } else if (catIdx === 5) {
+        ctx.fillStyle = '#f8fafc'; ctx.beginPath(); ctx.roundRect(16, 32, 32, 12, 4); ctx.fill();
+        ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.roundRect(18, 18, 28, 15, 6); ctx.fill();
+    } else if (catIdx === 6) {
+        ctx.fillStyle = '#f59e0b'; ctx.beginPath(); ctx.moveTo(32, 10); ctx.lineTo(54, 46); ctx.lineTo(10, 46); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = '#dc2626'; ctx.beginPath(); ctx.arc(28, 32, 4, 0, Math.PI*2); ctx.arc(38, 38, 4, 0, Math.PI*2); ctx.fill();
+    } else if (catIdx === 7) {
+        ctx.fillStyle = '#d97706'; ctx.beginPath(); ctx.arc(32, 30, 16, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#451a03'; ctx.beginPath(); ctx.arc(26, 26, 3, 0, Math.PI*2); ctx.arc(38, 28, 3, 0, Math.PI*2); ctx.arc(32, 36, 3, 0, Math.PI*2); ctx.fill();
+    } else if (catIdx === 8) {
+        ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.arc(32, 32, 14, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#22c55e'; ctx.beginPath(); ctx.ellipse(32, 14, 3, 7, 0.3, 0, Math.PI * 2); ctx.fill();
+    } else if (catIdx === 9) {
+        ctx.fillStyle = '#451a03'; ctx.beginPath(); ctx.roundRect(16, 16, 32, 32, 6); ctx.fill();
+        ctx.strokeStyle = '#78350f'; ctx.lineWidth = 2; ctx.strokeRect(20, 20, 11, 11); ctx.strokeRect(33, 20, 11, 11);
+    } else if (catIdx === 10) {
+        ctx.fillStyle = '#f472b6'; ctx.beginPath(); ctx.roundRect(20, 18, 24, 28, 10); ctx.fill();
+    } else if (catIdx === 11) {
+        ctx.fillStyle = '#b45309'; ctx.beginPath(); ctx.ellipse(32, 28, 14, 16, Math.PI / 6, 0, Math.PI * 2); ctx.fill();
+    } else if (catIdx === 12) {
+        ctx.fillStyle = '#38bdf8'; ctx.beginPath(); ctx.roundRect(20, 16, 24, 32, [4, 4, 10, 10]); ctx.fill();
+        ctx.strokeStyle = '#f8fafc'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(38, 8); ctx.lineTo(26, 22); ctx.stroke();
+    } else if (catIdx === 13) {
+        ctx.fillStyle = '#dc2626'; ctx.beginPath(); ctx.roundRect(16, 22, 32, 22, 6); ctx.fill();
+        ctx.fillStyle = '#fef08a'; ctx.fillRect(20, 28, 24, 4);
+    } else if (catIdx === 14) {
+        ctx.fillStyle = '#f97316'; ctx.beginPath(); ctx.roundRect(16, 24, 32, 18, 8); ctx.fill();
+        ctx.fillStyle = '#fde047'; ctx.fillRect(16, 30, 32, 4);
+    } else if (catIdx === 15) {
+        ctx.fillStyle = '#991b1b'; ctx.beginPath(); ctx.roundRect(14, 20, 36, 24, 8); ctx.fill();
+        ctx.fillStyle = '#f8fafc'; ctx.fillRect(20, 26, 4, 12); ctx.fillRect(30, 24, 4, 12);
+    } else if (catIdx === 16) {
+        ctx.fillStyle = '#fb7185'; ctx.beginPath(); ctx.roundRect(14, 20, 36, 24, 8); ctx.fill();
+        ctx.fillStyle = '#fda4af'; ctx.fillRect(18, 26, 28, 4); ctx.fillRect(18, 34, 28, 4);
+    } else if (catIdx === 17) {
+        ctx.fillStyle = '#fde047'; ctx.beginPath(); ctx.arc(32, 30, 12, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#f8fafc'; ctx.beginPath(); ctx.arc(32, 30, 6, 0, Math.PI*2); ctx.fill();
+    } else if (catIdx === 18) {
+        ctx.fillStyle = '#7c2d12'; ctx.beginPath(); ctx.roundRect(14, 20, 36, 24, 10); ctx.fill();
+        ctx.fillStyle = '#ea580c'; ctx.fillRect(18, 28, 28, 6);
+    } else {
+        ctx.fillStyle = '#f472b6'; ctx.beginPath(); ctx.arc(32, 26, 14, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#d97706'; ctx.beginPath(); ctx.moveTo(22, 36); ctx.lineTo(42, 36); ctx.lineTo(32, 54); ctx.closePath(); ctx.fill();
+    }
+    ctx.restore();
+
+    ctx.fillStyle = '#020617'; ctx.beginPath(); ctx.arc(32, 48, 10, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = '#38bdf8'; ctx.font = 'bold 9px sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(level, 32, 48);
+
+    const dataUrl = canvas.toDataURL();
+    iconCache[key] = dataUrl;
+    return dataUrl;
+}
+
+const unlockedBookItems = new Set();
+let coins = 500n, gems = 100n, playerLevel = 1, playerExp = 0, maxExp = 10;
+let currentModeCategory = 0; 
+let currentOrderCategory = 0, currentOrderLevel = 1, currentOrderReward = 3n, currentOrderExp = 1;
+
+const boards = {};
+for(let i=0; i<categories.length; i++) boards[i] = Array(36).fill(null);
+boards[0][0] = { type: 'producer', cat: 0, level: 1 };
+
+function getBoard() { return boards[currentModeCategory]; }
+
+function saveGame() {
+    const saveData = {
+        coins: coins.toString(),
+        gems: gems.toString(),
+        playerLevel,
+        playerExp,
+        maxExp,
+        currentModeCategory,
+        boards: JSON.stringify(boards, (_, v) => typeof v === 'bigint' ? v.toString() : v),
+        unlockedBookItems: Array.from(unlockedBookItems),
+        unlockedSkins: Array.from(unlockedSkins)
+    };
+    localStorage.setItem('merge_cooking_save_v2', JSON.stringify(saveData));
+}
+
+function loadGame() {
+    const saved = localStorage.getItem('merge_cooking_save_v2');
+    if (!saved) return;
+    try {
+        const data = JSON.parse(saved);
+        coins = BigInt(data.coins);
+        gems = BigInt(data.gems);
+        playerLevel = data.playerLevel;
+        playerExp = data.playerExp;
+        maxExp = data.maxExp;
+        currentModeCategory = data.currentModeCategory;
+        if (data.boards) {
+            const parsedBoards = JSON.parse(data.boards);
+            for (let k in parsedBoards) boards[k] = parsedBoards[k];
+        }
+        if (data.unlockedBookItems) {
+            data.unlockedBookItems.forEach(item => unlockedBookItems.add(item));
+        }
+        if (data.unlockedSkins) {
+            data.unlockedSkins.forEach(skin => unlockedSkins.add(skin));
+        }
+    } catch(e) { console.error('불러오기 실패', e); }
+}
+
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+let isBgm = true, bgmInterval = null;
+
+function playSound(type) {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+    osc.frequency.setValueAtTime(type === 'buy' ? 523 : type === 'merge' ? 659 : 880, audioCtx.currentTime);
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+    osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+}
+
+function startBGM() {
+    clearInterval(bgmInterval);
+    const notes = [440, 523, 659, 784]; let idx = 0;
+    bgmInterval = setInterval(() => {
+        if (!isBgm) return;
+        const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+        osc.frequency.setValueAtTime(notes[idx], audioCtx.currentTime);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+        idx = (idx + 1) % notes.length;
+    }, 200);
+}
+startBGM();
+
+function getActiveItems(catIdx) { return categories[catIdx].items; }
+function getDishName(catIdx, lv) { return getActiveItems(catIdx)[lv - 1] || `요리 ${lv}`; }
+function checkAndUnlockBook(catIdx, lv) { unlockedBookItems.add(`${catIdx}-${lv}`); saveGame(); }
+
+function generateNewOrder() {
+    const unlockedCats = categories.filter(cat => playerLevel >= cat.unlockLv);
+    const randCat = unlockedCats[Math.floor(Math.random() * unlockedCats.length)];
+    currentOrderCategory = categories.indexOf(randCat);
+
+    const items = getActiveItems(currentOrderCategory);
+    let maxAllowedLv = Math.min(items.length, Math.max(1, Math.floor(playerLevel * 0.3) + 1));
+    let minAllowedLv = Math.max(1, maxAllowedLv - 2);
+    
+    currentOrderLevel = Math.floor(Math.random() * (maxAllowedLv - minAllowedLv + 1)) + minAllowedLv;
+    currentOrderLevel = Math.min(items.length, Math.max(1, currentOrderLevel));
+    
+    checkAndUnlockBook(currentOrderCategory, currentOrderLevel);
+
+    currentOrderReward = BigInt(currentOrderLevel * 5 + 10);
+    currentOrderExp = Math.max(2, Math.floor(currentOrderLevel * 1.2) + 2);
+
+    document.getElementById('customer-title-text').innerText = `[${randCat.name}] 주문`;
+    document.getElementById('customer-order-text').innerText = `${getDishName(currentOrderCategory, currentOrderLevel)} (Lv.${currentOrderLevel})`;
+    document.getElementById('customer-reward').innerText = `${currentOrderReward} (⭐+${currentOrderExp})`;
+}
+
+function addExp(amt) {
+    playerExp += amt;
+    while (playerExp >= maxExp) {
+        playerExp -= maxExp;
+        playerLevel += 1;
+        maxExp = Math.floor(maxExp * 1.35) + 6;
+        gems += 15n;
+        coins += 100n;
+
+        let rewardCatIdx = -1;
+        let isFixedReward = false;
+
+        const matchedCatIdx = categories.findIndex(cat => cat.unlockLv === playerLevel);
+        if (matchedCatIdx !== -1) {
+            rewardCatIdx = matchedCatIdx;
+            isFixedReward = true;
+        } else {
+            const unlockedCats = categories.filter(cat => playerLevel >= cat.unlockLv);
+            const randCat = unlockedCats[Math.floor(Math.random() * unlockedCats.length)];
+            rewardCatIdx = categories.indexOf(randCat);
+        }
+
+        const rewardCat = categories[rewardCatIdx];
+        const targetBoard = boards[rewardCatIdx];
+        const emptySlots = []; targetBoard.forEach((v, i) => { if (v === null) emptySlots.push(i); });
+
+        let rewardMsg = `🎉 레벨 업! P.Lv.${playerLevel} 달성!\n💎 다이아 +15, 🪙 코인 +100 지급!`;
+        if (emptySlots.length > 0) {
+            targetBoard[emptySlots[0]] = { type: 'producer', cat: rewardCatIdx, level: 1 };
+            rewardMsg += `\n🎁 ${isFixedReward ? '✨ [확정 해금]' : '🎲 [무작위 선물]'} [${rewardCat.name}] 생산기(Lv.1) 지급!`;
+        }
+        alert(rewardMsg);
+    }
+    updateUI();
+    renderBoard();
+    saveGame();
+}
+
+function updateUI() {
+    document.getElementById('coin-count').innerText = coins.toString();
+    document.getElementById('gem-count').innerText = gems.toString();
+    document.getElementById('player-lv').innerText = playerLevel;
+    document.getElementById('player-exp').innerText = playerExp;
+    document.getElementById('max-exp').innerText = maxExp;
+    saveGame();
+}
+
+function getBestProducer(catIdx) {
+    let maxLv = -1;
+    boards[catIdx].forEach(item => {
+        if (item && item.type === 'producer' && item.cat === catIdx) {
+            if (item.level > maxLv) maxLv = item.level;
+        }
+    });
+    return maxLv;
+}
+
+function triggerProducer(catIdx, prodLevel) {
+    const board = getBoard();
+    const emptySlots = []; board.forEach((v, i) => { if (v === null) emptySlots.push(i); });
+    if (emptySlots.length === 0) { alert('6x6 보드판이 꽉 찼습니다!'); return; }
+
+    const items = getActiveItems(catIdx);
+    const targetLv = Math.min(prodLevel, items.length);
+    checkAndUnlockBook(catIdx, targetLv);
+
+    board[emptySlots[0]] = { type: 'dish', cat: catIdx, level: targetLv };
+    playSound('buy');
+    renderBoard();
+    saveGame();
+}
+
+function spawnItem() {
+    const board = getBoard();
+    const emptySlots = []; board.forEach((v, i) => { if (v === null) emptySlots.push(i); });
+    if (emptySlots.length === 0) { alert('6x6 보드판이 꽉 찼습니다!'); return; }
+
+    let bestLv = getBestProducer(currentModeCategory);
+    if (bestLv === -1) {
+        board[emptySlots[0]] = { type: 'producer', cat: currentModeCategory, level: 1 };
+        emptySlots.shift();
+        if (emptySlots.length === 0) { renderBoard(); return; }
+        bestLv = 1;
+    }
+
+    triggerProducer(currentModeCategory, bestLv);
+}
+
+function performAutoMerge() {
+    const board = getBoard();
+    let merged = false;
+    for (let i = 0; i < 36; i++) {
+        if (!board[i]) continue;
+        for (let j = i + 1; j < 36; j++) {
+            if (!board[j]) continue;
+            if (board[i].type === board[j].type && board[i].cat === board[j].cat && board[i].level === board[j].level) {
+                let maxLv = board[i].type === 'producer' ? 100 : getActiveItems(board[i].cat).length;
+                if (board[i].level < maxLv) {
+                    board[i].level += 1;
+                    checkAndUnlockBook(board[i].cat, board[i].level);
+                    board[j] = null;
+                    merged = true;
+                    break;
+                }
+            }
+        }
+    }
+    if (merged) { playSound('merge'); renderBoard(); saveGame(); }
+    else { alert('합칠 수 있는 동일한 아이템이 없습니다!'); }
+}
+
+let draggedItem = null, draggedIndex = null, ghostEl = null;
+
+function renderBoard() {
+    const currentCat = categories[currentModeCategory];
+    document.getElementById('grid').style.background = currentCat.boardBg;
+
+    const board = getBoard();
+    const slots = document.querySelectorAll('.slot');
+    slots.forEach((slot, idx) => {
+        slot.innerHTML = '';
+        const item = board[idx];
+        if (item) {
+            const el = document.createElement('div');
+            el.className = 'item';
+            el.dataset.index = idx;
+            el.style.backgroundColor = categories[item.cat].color;
+            
+            if (item.type === 'producer') {
+                el.classList.add('producer');
+                el.innerHTML = `<span style="font-size:12px;">🏭</span><span style="font-size:6px; color:#fbbf24; font-weight:900;">${categories[item.cat].name} L${item.level}</span>`;
+                
+                el.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    triggerProducer(item.cat, item.level);
+                });
+            } else {
+                const cat = categories[item.cat];
+                const name = getDishName(item.cat, item.level);
+                const imgUrl = getGeneratedFoodIcon(name, cat.color, item.level, item.cat);
+                el.innerHTML = `
+                    <img src="${imgUrl}" style="width:24px; height:24px; border-radius:4px; margin-bottom:1px;" />
+                    <span style="font-size:6px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; width:100%;">${name}</span>
+                    <span style="font-size:5px; opacity:0.85;">Lv.${item.level}</span>
+                `;
+            }
+            
+            el.addEventListener('pointerdown', handlePointerDown);
+            slot.appendChild(el);
+        }
+    });
+}
+
+function handlePointerDown(e) {
+    if (e.target.tagName === 'SPAN' && e.currentTarget.classList.contains('producer')) return;
+
+    draggedItem = e.currentTarget;
+    draggedIndex = parseInt(draggedItem.dataset.index);
+    const rect = draggedItem.getBoundingClientRect();
+    
+    ghostEl = draggedItem.cloneNode(true);
+    ghostEl.style.position = 'fixed'; ghostEl.style.zIndex = '9999';
+    ghostEl.style.pointerEvents = 'none'; ghostEl.style.opacity = '0.85';
+    ghostEl.style.width = rect.width + 'px'; ghostEl.style.height = rect.height + 'px';
+    document.body.appendChild(ghostEl);
+    
+    moveGhost(e.clientX, e.clientY);
+    window.addEventListener('pointermove', handlePointerMove);
+    window.addEventListener('pointerup', handlePointerUp);
+}
+
+function handlePointerMove(e) { if (ghostEl) moveGhost(e.clientX, e.clientY); }
+function moveGhost(x, y) {
+    ghostEl.style.left = (x - ghostEl.offsetWidth / 2) + 'px';
+    ghostEl.style.top = (y - ghostEl.offsetHeight / 2) + 'px';
+}
+
+function handlePointerUp(e) {
+    window.removeEventListener('pointermove', handlePointerMove);
+    window.removeEventListener('pointerup', handlePointerUp);
+    if (ghostEl) { ghostEl.remove(); ghostEl = null; }
+
+    const elem = document.elementFromPoint(e.clientX, e.clientY);
+    if (!elem) { draggedItem = null; return; }
+
+    const board = getBoard();
+    if (elem.closest('#customer-area')) {
+        const item = board[draggedIndex];
+        if (item && item.type === 'dish' && item.cat === currentOrderCategory && item.level === currentOrderLevel) {
+            gems += currentOrderReward; coins += BigInt(currentOrderLevel * 30);
+            playSound('buy'); board[draggedIndex] = null;
+            addExp(currentOrderExp); generateNewOrder(); renderBoard(); updateUI();
+            draggedItem = null; return;
+        }
+    }
+
+    if (elem.closest('#trash-bin')) {
+        board[draggedIndex] = null; renderBoard(); updateUI(); draggedItem = null; return;
+    }
+
+    const targetSlot = elem.closest('.slot');
+    if (targetSlot) {
+        const targetIndex = parseInt(targetSlot.dataset.index);
+        if (targetIndex !== draggedIndex) {
+            const src = board[draggedIndex], tgt = board[targetIndex];
+            if (tgt === null) {
+                board[targetIndex] = src; board[draggedIndex] = null;
+            } else if (tgt.type === src.type && tgt.cat === src.cat && tgt.level === src.level) {
+                let maxLv = src.type === 'producer' ? 100 : getActiveItems(src.cat).length;
+                if (tgt.level < maxLv) {
+                    tgt.level += 1; checkAndUnlockBook(src.cat, tgt.level);
+                    board[draggedIndex] = null; playSound('merge');
+                }
+            } else {
+                board[draggedIndex] = tgt; board[targetIndex] = src;
+            }
+        }
+    }
+    draggedItem = null; renderBoard(); updateUI();
+}
+
+function renderShopModal() {
+    const list = document.getElementById('shop-list');
+    list.innerHTML = '';
+
+    const prodHeader = document.createElement('div');
+    prodHeader.innerHTML = `<h4 style="color:#38bdf8; margin:4px 0;">🏭 생산기 구매 (레벨 선택 가능, 코인 2=다이아 1)</h4>`;
+    list.appendChild(prodHeader);
+
+    categories.forEach((cat, idx) => {
+        const isUnlocked = playerLevel >= cat.unlockLv;
+
+        const card = document.createElement('div');
+        card.className = 'mode-card';
+        card.innerHTML = `
+            <div class="shop-row">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="font-size:20px;">${cat.icon}</span>
+                    <div>
+                        <div style="font-weight:800; font-size:11px; color:${isUnlocked ? '#f8fafc' : '#64748b'};">${cat.name} 생산기</div>
+                        <div style="font-size:9px; color:${isUnlocked ? '#f472b6' : '#ef4444'};">${isUnlocked ? '레벨별 구매 가능' : `(해금: Lv.${cat.unlockLv})`}</div>
+                    </div>
+                </div>
+                ${isUnlocked ? `
+                <div class="shop-controls">
+                    <span style="font-size:9px; color:#38bdf8;">Lv:</span>
+                    <input type="number" id="level-input-${idx}" class="shop-input" value="1" min="1" max="10" onchange="updatePrice(${idx})">
+                    <span style="font-size:9px; color:#38bdf8;">수량:</span>
+                    <input type="number" id="qty-input-${idx}" class="shop-input" value="1" min="1" max="10" onchange="updatePrice(${idx})">
+                </div>
+                ` : ``}
+            </div>
+            ${isUnlocked ? `
+            <div class="shop-row" style="border-top:1px solid #334155; padding-top:6px;">
+                <span style="font-size:10px; color:#fbbf24;" id="price-display-${idx}">비용: 💎 10개 (또는 🪙 20코인)</span>
+                <div style="display:flex; gap:4px;">
+                    <button class="menu-btn" style="background:#db2777;" onclick="buyProducer(${idx}, 'gem')">다이아 구매</button>
+                    <button class="menu-btn" style="background:#d97706;" onclick="buyProducer(${idx}, 'coin')">코인 구매</button>
+                </div>
+            </div>
+            ` : `<div style="font-size:10px; color:#ef4444;">잠김</div>`}
+        `;
+        list.appendChild(card);
+    });
+
+    const skinHeader = document.createElement('div');
+    skinHeader.innerHTML = `<h4 style="color:#f472b6; margin:12px 0 4px 0;">🎨 테마 스킨 상점</h4>`;
+    list.appendChild(skinHeader);
+
+    skins.forEach((skin, sIdx) => {
+        const isOwned = unlockedSkins.has(skin.name);
+        const card = document.createElement('div');
+        card.className = 'mode-card';
+        card.innerHTML = `
+            <div class="shop-row">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="font-size:18px;">✨</span>
+                    <div>
+                        <div style="font-weight:800; font-size:11px; color:#f8fafc;">${skin.name}</div>
+                        <div style="font-size:9px; color:#f472b6;">가격: 💎${skin.priceGem} 또는 🪙${skin.priceCoin}</div>
+                    </div>
+                </div>
+                <div>
+                    ${isOwned ? 
+                        `<button class="menu-btn" style="background:#059669;" onclick="applySkin('${skin.name}', '${skin.color}')">적용하기</button>` :
+                        `<div style="display:flex; gap:4px;">
+                            <button class="menu-btn" style="background:#db2777;" onclick="buySkin(${sIdx}, 'gem')">다이아 구매</button>
+                            <button class="menu-btn" style="background:#d97706;" onclick="buySkin(${sIdx}, 'coin')">코인 구매</button>
+                         </div>`
+                    }
+                </div>
+            </div>
+        `;
+        list.appendChild(card);
+    });
+}
+
+function updatePrice(idx) {
+    const lv = parseInt(document.getElementById(`level-input-${idx}`).value) || 1;
+    const qty = parseInt(document.getElementById(`qty-input-${idx}`).value) || 1;
+    const baseGem = 10 * Math.pow(2, lv - 1) * qty;
+    const baseCoin = baseGem * 2;
+    document.getElementById(`price-display-${idx}`).innerText = `비용: 💎 ${baseGem}개 (또는 🪙 ${baseCoin}코인)`;
+}
+
+function buyProducer(idx, currency) {
+    const cat = categories[idx];
+    const lv = parseInt(document.getElementById(`level-input-${idx}`).value) || 1;
+    const qty = parseInt(document.getElementById(`qty-input-${idx}`).value) || 1;
+
+    const gemCost = 10 * Math.pow(2, lv - 1) * qty;
+    const coinCost = gemCost * 2;
+
+    if (currency === 'gem' && gems < BigInt(gemCost)) {
+        alert(`💎 다이아가 부족합니다! (필요: 💎${gemCost})`); return;
+    }
+    if (currency === 'coin' && coins < BigInt(coinCost)) {
+        alert(`🪙 코인이 부족합니다! (필요: 🪙${coinCost})`); return;
+    }
+
+    const targetBoard = boards[idx];
+    const emptySlots = []; 
+    targetBoard.forEach((v, i) => { if (v === null) emptySlots.push(i); });
+
+    if (emptySlots.length < qty) {
+        alert(`[${cat.name}] 6x6 보드판에 빈자리가 부족합니다!`); return;
+    }
+
+    if (currency === 'gem') gems -= BigInt(gemCost);
+    else coins -= BigInt(coinCost);
+
+    for (let i = 0; i < qty; i++) {
+        targetBoard[emptySlots[i]] = { type: 'producer', cat: idx, level: lv };
+        checkAndUnlockBook(idx, lv);
+    }
+    playSound('buy');
+    updateUI();
+    alert(`🎉 [${cat.name}] Lv.${lv} 생산기 ${qty}개 구매 완료!`);
+    document.getElementById('shop-modal').style.display = 'none';
+    if (currentModeCategory === idx) renderBoard();
+}
+
+function buySkin(sIdx, currency) {
+    const skin = skins[sIdx];
+    if (currency === 'gem' && gems < BigInt(skin.priceGem)) { alert('💎 다이아가 부족합니다!'); return; }
+    if (currency === 'coin' && coins < BigInt(skin.priceCoin)) { alert('🪙 코인이 부족합니다!'); return; }
+
+    if (currency === 'gem') gems -= BigInt(skin.priceGem);
+    else coins -= BigInt(skin.priceCoin);
+
+    unlockedSkins.add(skin.name);
+    applySkin(skin.name, skin.color);
+    updateUI();
+    renderShopModal();
+    alert(`🎉 [${skin.name}] 구매 및 적용 완료!`);
+}
+
+function applySkin(name, color) {
+    currentSkinColor = color;
+    document.getElementById('game-container').style.borderColor = color;
+    alert(`✨ [${name}] 스킨이 적용되었습니다!`);
+}
+
+function renderModeModal() {
+    const list = document.getElementById('mode-list');
+    list.innerHTML = '';
+    categories.forEach((cat, idx) => {
+        const isUnlocked = playerLevel >= cat.unlockLv;
+        const isActive = currentModeCategory === idx;
+
+        const card = document.createElement('div');
+        card.className = `mode-card`;
+        card.style.flexDirection = 'row';
+        card.innerHTML = `
+            <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:20px;">${cat.icon}</span>
+                <div>
+                    <div style="font-weight:800; font-size:12px; color:${isUnlocked ? '#f8fafc' : '#64748b'};">${cat.name} 모드</div>
+                    <div style="font-size:9px; color:${isUnlocked ? '#38bdf8' : '#ef4444'};">해금 조건: 레벨 ${cat.unlockLv} 이상</div>
+                </div>
+            </div>
+            <button class="menu-btn" style="background:${isActive ? '#059669' : (isUnlocked ? '#2563eb' : '#475569')};">
+                ${isActive ? '플레이중' : (isUnlocked ? '선택하기' : '잠김')}
+            </button>
+        `;
+
+        card.addEventListener('click', () => {
+            if (!isUnlocked) { alert(`🔒 레벨 ${cat.unlockLv}이 되어야 해금됩니다!`); return; }
+            currentModeCategory = idx;
+            document.getElementById('mode-modal').style.display = 'none';
+            renderBoard();
+            saveGame();
+        });
+        list.appendChild(card);
+    });
+}
+
+document.getElementById('open-shop-modal').addEventListener('click', () => {
+    renderShopModal();
+    document.getElementById('shop-modal').style.display = 'flex';
+});
+document.getElementById('close-shop-modal').addEventListener('click', () => { document.getElementById('shop-modal').style.display = 'none'; });
+
+document.getElementById('goto-mission-btn').addEventListener('click', () => {
+    const targetCat = currentOrderCategory;
+    const catObj = categories[targetCat];
+    if (playerLevel < catObj.unlockLv) {
+        alert(`🔒 미션 테마인 [${catObj.name}] 모드는 레벨 ${catObj.unlockLv}에 해금됩니다!`);
+        return;
+    }
+    currentModeCategory = targetCat;
+    renderBoard();
+    saveGame();
+});
+
+document.getElementById('open-mode-modal').addEventListener('click', () => {
+    renderModeModal();
+    document.getElementById('mode-modal').style.display = 'flex';
+});
+document.getElementById('close-mode-modal').addEventListener('click', () => { document.getElementById('mode-modal').style.display = 'none'; });
+
+document.getElementById('open-book').addEventListener('click', () => {
+    const list = document.getElementById('book-list'); list.innerHTML = '';
+    categories.forEach((cat, cIdx) => {
+        const items = getActiveItems(cIdx);
+        let unlockedCount = 0;
+        items.forEach((_, lIdx) => { if (unlockedBookItems.has(`${cIdx}-${lIdx+1}`)) unlockedCount++; });
+
+        const header = document.createElement('div');
+        header.className = 'accordion-header';
+        header.innerHTML = `<span>${cat.icon} ${cat.name} 도감 (${unlockedCount}/${items.length})</span> <span>▼ 접기</span>`;
+        
+        const content = document.createElement('div');
+        content.className = 'accordion-content active';
+        header.addEventListener('click', () => content.classList.toggle('active'));
+
+        items.forEach((name, lIdx) => {
+            const lv = lIdx + 1;
+            const isUnlocked = unlockedBookItems.has(`${cIdx}-${lv}`);
+            const div = document.createElement('div');
+            div.style.cssText = "background:#1e293b; padding:8px; border-radius:8px; display:flex; justify-content:space-between; align-items:center; font-size:11px; border:1px solid #334155;";
+            
+            if (isUnlocked) {
+                const imgUrl = getGeneratedFoodIcon(name, cat.color, lv, cIdx);
+                div.innerHTML = `<span style="color:#f8fafc; display:flex; align-items:center; gap:6px;"><img src="${imgUrl}" style="width:20px; height:20px; border-radius:3px;">${name}</span> <span style="color:#38bdf8; font-weight:700;">Lv.${lv}</span>`;
+            } else {
+                div.innerHTML = `<span style="color:#64748b;">❓ 미발견 요리</span> <span style="color:#64748b;">Lv.${lv}</span>`;
+            }
+            content.appendChild(div);
+        });
+        list.appendChild(header); list.appendChild(content);
+    });
+    document.getElementById('book-modal').style.display = 'flex';
+});
+document.getElementById('close-book').addEventListener('click', () => { document.getElementById('book-modal').style.display = 'none'; });
+
+document.getElementById('spawn-btn').addEventListener('click', spawnItem);
+document.getElementById('auto-merge-btn').addEventListener('click', performAutoMerge);
+document.getElementById('skip-mission-btn').addEventListener('click', generateNewOrder);
+document.getElementById('bgm-btn').addEventListener('click', () => {
+    isBgm = !isBgm;
+    document.getElementById('bgm-btn').style.background = isBgm ? '#059669' : '#334155';
+    document.getElementById('bgm-btn').innerText = isBgm ? '🔥 BGM' : '🔇 MUTE';
+});
+
+loadGame();
+generateNewOrder();
+renderBoard();
+updateUI();
+</script>
+</body>
+</html>
