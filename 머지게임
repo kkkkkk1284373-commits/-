@@ -122,7 +122,6 @@ body {
     padding: 2px 5px; background: #991b1b; color: #fecaca;
     border: 1px solid #dc2626; border-radius: 4px; font-size: 9px; font-weight: 800; cursor: pointer;
 }
-/* 6x6 Grid Container */
 .grid-container {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
@@ -299,7 +298,6 @@ body {
         </div>
     </div>
 
-    <!-- 6x6 Grid Board -->
     <div class="grid-container" id="grid">
         <script>for(let i=0; i<36; i++) document.write(`<div class="slot" data-index="${i}"></div>`);</script>
     </div>
@@ -311,7 +309,6 @@ body {
         <button class="action-btn" id="spawn-btn" style="background:#d97706;">🏭 현재 모드 생산기 작동하기 (클릭)</button>
     </div>
 
-    <!-- Modals -->
     <div id="shop-modal" class="modal">
         <div class="modal-header">
             <h3>🛍️ 상점 (생산기 레벨선택 & 스킨)</h3>
@@ -391,7 +388,6 @@ const skins = [
 const unlockedSkins = new Set(['기본 스킨']);
 let currentSkinColor = '#0f172a';
 
-// 🌟 고화질 일러스트 렌더링 엔진 (그릇, 질감, 토핑 표현)
 const iconCache = {};
 function getGeneratedFoodIcon(text, baseColor, level, catIdx) {
     const key = text + "_" + level + "_" + catIdx;
